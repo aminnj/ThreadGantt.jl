@@ -7,7 +7,7 @@ The package is currently unregistered. Install it with
 
 ## Usage
 
-Tag a section of code with a label (`"sum"` and `"mean"` below).
+Tag a section of code with a label (`"sum"` and `"mean"` in this example).
 ```julia
 julia> using ThreadGantt
 
@@ -33,7 +33,7 @@ in case you want to pipe a script to a text file.
 julia> Threads.@threads for i in 1:8 ; foo(); end
 [sum] thread = 2, start = 1.630745245690166e9, stop = 1.630745245965308e9, duration = 0.27514195442199707
 [sum] thread = 1, start = 1.630745245681062e9, stop = 1.630745246068402e9, duration = 0.38734006881713867
-...
+# ...
 [mean] thread = 3, start = 1.630745247075008e9, stop = 1.630745247668403e9, duration = 0.5933949947357178
 [mean] thread = 4, start = 1.630745247183934e9, stop = 1.630745247803387e9, duration = 0.619452953338623
 ```
@@ -46,4 +46,4 @@ julia> c = capture() do
 
 julia> plotgantt(c.output)
 ```
-
+<img src="images/example1.png" />

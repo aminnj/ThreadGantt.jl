@@ -1,5 +1,9 @@
 # ThreadGantt
 
+This package provides a convenience macro to mark certain sections of code
+and print out timestamps before and after execution, along with the thread number.
+The output is then converted to a manually-drawn version of a Plotly Gantt chart.
+
 The package is currently unregistered. Install it with
 ```julia
 ]add https://github.com/aminnj/ThreadGantt.jl
@@ -7,7 +11,11 @@ The package is currently unregistered. Install it with
 
 ## Usage
 
-Tag a section of code with a label (`"sum"` and `"mean"` in this example).
+Start julia with more than one thread to get anything useful out of this.
+```bash
+julia --threads 4
+```
+Then tag sections of code with the macro `@workunit` and labels (`"sum"` and `"mean"` in this example).
 ```julia
 julia> using ThreadGantt
 
@@ -27,7 +35,7 @@ julia> function foo()
     end
 ```
 
-Then do some work in parallel with threads. By default, information is printed to stdout
+Do some work in parallel with threads. By default, information is printed to stdout
 in case you want to pipe a script to a text file. 
 ```julia
 julia> Threads.@threads for i in 1:8 ; foo(); end
@@ -38,7 +46,7 @@ julia> Threads.@threads for i in 1:8 ; foo(); end
 [mean] thread = 4, start = 1.630745247183934e9, stop = 1.630745247803387e9, duration = 0.619452953338623
 ```
 
-This package also exports `capture` from [IOCapture.jl](https://github.com/JuliaDocs/IOCapture.jl) to capture stdout.
+This package re-exports `capture` from [IOCapture.jl](https://github.com/JuliaDocs/IOCapture.jl) to capture stdout.
 ```julia
 julia> c = capture() do
            Threads.@threads for i in 1:8 ; foo(); end

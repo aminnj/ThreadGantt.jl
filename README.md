@@ -52,6 +52,6 @@ julia> c = capture() do
            Threads.@threads for i in 1:16 ; foo(); end
        end;
 
-julia> plotgantt(c.output)
+julia> plotgantt(c.output) # or plotgantt(read("mylog.txt", String))
 ```
 <img src="images/example1.png" />

@@ -40,24 +40,41 @@ function plotgantt(out)
     shapes::Vector{PlotlyJS.Shape} = []
     traces::Vector{GenericTrace} = []
     colors = PlotlyJS.colors.tab10
+    usems, multiplier = false, 1
+    if gt1-gt0 < 2
+        usems, multiplier = true, 1e3
+    end
     for (color,g) in zip(colors,groups)
+        xs = Vector{Union{Float64,Missing}}()
+        ys = Vector{Union{Float64,Missing}}()
         for d in data
             d[:label] != g && continue
-            r = rect(d[:start]-gt0, d[:stop]-gt0, d[:thread]-0.3, d[:thread]+0.3; fillcolor=color, line_width=0)
-            push!(shapes, r)
+            x0 = multiplier*(d[:start]-gt0)
+            x1 = multiplier*(d[:stop]-gt0)
+            y0 = d[:thread]-0.3
+            y1 = d[:thread]+0.3
+            # https://github.com/plotly/plotly.py/blob/0a833291f2b01b77cecf2a168936aa90e17acaed/packages/python/plotly/plotly/figure_factory/_gantt.py#L172
+            append!(xs, [x0,x1,x1,x0,missing])
+            append!(ys, [y0,y0,y1,y1,missing])
         end
-        push!(traces, bar(name=g, x=[0,0], y=[0,0], marker_color=color))
+        push!(traces, scatter(x=xs, y=ys, fill="toself", hoverinfo="name", mode="none", fillcolor=color, name=g))
     end
 
     totalwalltime = gt1-gt0
     markedwalltime = sum(d[:duration] for d in data)
-    eff = markedwalltime/length(threads) / totalwalltime
+    eff = (markedwalltime/length(threads)) / totalwalltime
 
-    p = plot(traces, Layout(;shapes=shapes,
-                               yaxis=attr(range=(0.5,length(threads)+0.5), nticks=2*length(threads), title="thread"),
-                               xaxis=attr(range=(0-0.05*(gt1-gt0),(gt1-gt0)*1.05), title="walltime (s)"),
-                               legend=attr(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-                               title="duration = $(round(totalwalltime; sigdigits=4))s, efficiency = $(round(100*eff; sigdigits=3))%",
-                              ))
+    xaxis_attr = attr(title="walltime", ticksuffix=(usems ? "ms" : "s"), zeroline=false)
+    yaxis_attr = attr(range=[0.5, length(threads)+0.5], autorange=false, zeroline=false, tickvals=threads, tickprefix="thread ")
+    legend_attr = attr(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+    title = "duration = $(round(totalwalltime; sigdigits=4))s, efficiency = $(round(100*eff; sigdigits=3))%"
+    layout = Layout(;shapes=shapes,
+                    yaxis=yaxis_attr,
+                    xaxis=xaxis_attr,
+                    legend=legend_attr,
+                    title=title,
+                    showlegend=true,
+                   )
+    p = plot(traces, layout)
     return p
 end

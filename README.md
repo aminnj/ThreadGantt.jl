@@ -2,7 +2,7 @@
 
 This package provides a convenience macro to mark certain sections of code
 and print out timestamps before and after execution, along with the thread number.
-The output is then converted to a manually-drawn version of a Plotly Gantt chart.
+The output is then converted to an interactive Plotly Gantt chart.
 
 The package is currently unregistered. Install it with
 ```julia
@@ -38,7 +38,7 @@ julia> function foo()
 Do some work in parallel with threads. By default, information is printed to stdout
 in case you want to pipe a script to a text file. 
 ```julia
-julia> Threads.@threads for i in 1:8 ; foo(); end
+julia> Threads.@threads for i in 1:16 ; foo(); end
 [sum] thread = 2, start = 1.630745245690166e9, stop = 1.630745245965308e9, duration = 0.27514195442199707
 [sum] thread = 1, start = 1.630745245681062e9, stop = 1.630745246068402e9, duration = 0.38734006881713867
 # ...
@@ -49,7 +49,7 @@ julia> Threads.@threads for i in 1:8 ; foo(); end
 This package re-exports `capture` from [IOCapture.jl](https://github.com/JuliaDocs/IOCapture.jl) to capture stdout.
 ```julia
 julia> c = capture() do
-           Threads.@threads for i in 1:8 ; foo(); end
+           Threads.@threads for i in 1:16 ; foo(); end
        end;
 
 julia> plotgantt(c.output)
